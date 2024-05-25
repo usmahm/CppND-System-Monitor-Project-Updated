@@ -4,7 +4,7 @@
 #include <fstream>
 #include <regex>
 #include <string>
-
+#include <iostream>
 namespace LinuxParser {
 // Paths
 const std::string kProcDirectory{"/proc/"};
@@ -24,6 +24,7 @@ long UpTime();
 std::vector<int> Pids();
 int TotalProcesses();
 int RunningProcesses();
+int ReadProcessesFromStatFile(std::string keyToRead);
 std::string OperatingSystem();
 std::string Kernel();
 
