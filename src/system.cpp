@@ -54,3 +54,12 @@ long System::UpTime() {
   long up_time = LinuxParser::UpTime();  
   return up_time;
 }
+
+System::System() {
+  auto pids = LinuxParser::Pids();
+
+  for (auto id : pids) {
+    Process process(id);
+    processes_.push_back(id);
+  }
+}
