@@ -18,7 +18,7 @@ string LinuxParser::OperatingSystem() {
   string value;
   std::ifstream filestream(kOSPath);
   if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
+    while (getline(filestream, line)) {
       std::replace(line.begin(), line.end(), ' ', '_');
       std::replace(line.begin(), line.end(), '=', ' ');
       std::replace(line.begin(), line.end(), '"', ' ');
@@ -40,7 +40,7 @@ string LinuxParser::Kernel() {
   string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
-    std::getline(stream, line);
+    getline(stream, line);
     std::istringstream linestream(line);
     linestream >> os >> version >> kernel;
   }
@@ -114,16 +114,14 @@ float LinuxParser::MemoryUtilization() {
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() { 
-  long uptime;
+  long uptime{0};
   string line;
 
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
     if (getline(stream, line)) {
-      std::stringstream ss(line);
+      std::istringstream ss(line);
       ss >> uptime;
-
-      return uptime;    
     }
   }
 
@@ -196,10 +194,4 @@ string LinuxParser::User(int pid[[maybe_unused]]) { return string(); }
 
 // TODO: Read and return the uptime of a process
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::UpTime(int pid[[maybe_unused]]) { 
-  // float uptime;
-  // string line;
-
-  // std::ifstream stream();
-  return 0;
-}
+long LinuxParser::UpTime(int pid[[maybe_unused]]) { return 0; }

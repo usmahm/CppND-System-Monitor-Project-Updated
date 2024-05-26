@@ -19,9 +19,12 @@ string Format::ElapsedTime(long seconds) {
   up_min = to_string(rem / 60);
   up_sec = to_string(rem % 60);
 
-  up_hr.insert(0, 2 - up_hr.length(), '0');
   up_min.insert(0, 2 - up_min.length(), '0');
   up_sec.insert(0, 2 - up_sec.length(), '0');
+
+  if (up_hr.length() < 2) {
+    up_hr.insert(0, 2 - up_hr.length(), '0');
+  }
 
   string formatted_time = up_hr + ':' + up_min + ":" + up_sec;
   return formatted_time;
