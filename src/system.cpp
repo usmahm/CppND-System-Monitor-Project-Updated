@@ -16,8 +16,23 @@ using std::vector;
 // TODO: Return the system's CPU
 Processor& System::Cpu() { return cpu_; }
 
+bool compare(Process& p1, Process& p2) {
+  return p1 > p2;
+}
 // TODO: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+vector<Process>& System::Processes() {
+  processes_ = {};
+  auto pids = LinuxParser::Pids();
+
+  for (auto id : pids) {
+    Process process(id);
+    processes_.push_back(id);
+  }
+
+  std::sort(processes_.begin(), processes_.end(), compare);
+
+  return processes_;
+}
 
 // TODO: Return the system's kernel identifier (string)
 std::string System::Kernel() { 
@@ -55,11 +70,12 @@ long System::UpTime() {
   return up_time;
 }
 
-System::System() {
-  auto pids = LinuxParser::Pids();
+// System::System() {
+//   std::cout << "INITT " << "\n";
+//   auto pids = LinuxParser::Pids();
 
-  for (auto id : pids) {
-    Process process(id);
-    processes_.push_back(id);
-  }
-}
+//   for (auto id : pids) {
+//     Process process(id);
+//     processes_.push_back(id);
+//   }
+// }

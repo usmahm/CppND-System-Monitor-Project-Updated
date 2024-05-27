@@ -151,7 +151,33 @@ long LinuxParser::Jiffies() { return 0; }
 
 // TODO: Read and return the number of active jiffies for a PID
 // REMOVE: [[maybe_unused]] once you define the function
-long LinuxParser::ActiveJiffies(int pid[[maybe_unused]]) { return 0; }
+long LinuxParser::ActiveJiffies(int pid) {
+  string line;
+  string others;
+  long utime, stime;
+  long total_time{0};
+
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    if (getline(stream, line)) {
+      std::stringstream ss(line);
+
+      int count = 1;
+      while (ss >> others) {
+        count += 1;
+
+        if (count == 14)
+          break; 
+      }
+
+      ss >> utime >> stime;
+      total_time = utime + stime;
+      return total_time;
+    }
+  }
+
+  return total_time;
+}
 
 // TODO: Read and return the number of active jiffies for the system
 long LinuxParser::ActiveJiffies() { return 0; }
@@ -160,7 +186,33 @@ long LinuxParser::ActiveJiffies() { return 0; }
 long LinuxParser::IdleJiffies() { return 0; }
 
 // TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+std::array<double, 2> LinuxParser::GetIdlenNoneIdleTime() { 
+  string line, key;
+  std::array<double, 2> idle_nonidle_time;
+  double usertime, nicetime, systemtime, idletime, iowait, irq, softirq, steal, guest, guestnice;
+
+  std::ifstream stream(LinuxParser::kProcDirectory + LinuxParser::kStatFilename);
+  if (stream.is_open()) {
+    while (getline(stream, line)) {
+      std::stringstream ss(line);
+      ss >> key;
+
+      if (key == "cpu") {
+        ss >> usertime >> nicetime >> systemtime >> idletime >> iowait >> irq >> softirq >> steal >> guest >> guestnice;
+
+        auto idle_total = idletime + iowait;
+        auto non_idle_total = usertime + nicetime + systemtime + irq + softirq + steal;
+
+        idle_nonidle_time[0] = idle_total;
+        idle_nonidle_time[1] = non_idle_total;
+
+        return idle_nonidle_time;
+      }
+    }
+  }
+
+  return idle_nonidle_time;
+}
 
 int LinuxParser::ReadProcessesFromStatFile(std::string key_to_read) {
   string line, key;
@@ -297,7 +349,7 @@ long LinuxParser::UpTime(int pid) {
       }
 
       ss >> value;
-      return (value / sysconf(_SC_CLK_TCK));
+      return value;
     }
   }
 

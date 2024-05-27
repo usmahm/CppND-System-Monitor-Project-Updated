@@ -8,7 +8,6 @@
 class Processor {
  public:
   float Utilization();  // TODO: See src/processor.cpp
-  std::array<double, 2> GetIdlenNoneIdleTime();
 
   // Processor();
 
